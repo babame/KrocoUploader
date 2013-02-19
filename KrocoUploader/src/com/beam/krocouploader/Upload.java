@@ -78,11 +78,6 @@ public class Upload extends Activity {
 					makeToast("No Picture Selected!").show();
 				else if (null == apkUri)
 					makeToast("No Apk Selected!").show();
-				else if (null == txt_title.getText().toString().trim()
-						|| null == txt_desc.getText().toString().trim()
-						|| null == txt_author.getText().toString().trim())
-					makeToast("All or one of the required field(s) is empty")
-							.show();
 				else
 					new UploadSkin().execute();
 			}
