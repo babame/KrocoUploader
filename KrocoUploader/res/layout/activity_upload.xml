@@ -1,75 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="10dip" >
+    android:layout_height="match_parent" >
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/title_skinTitle" />
-
-    <EditText
-        android:id="@+id/txt_skinTitle"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dip"
-        android:hint="@string/hint_skinTitle" />
+        android:orientation="vertical"
+        android:padding="10dip" >
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/title_skinDesc" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_skinApk" />
 
-    <EditText
-        android:id="@+id/txt_skinDesc"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dip"
-        android:hint="@string/hint_skinDesc" />
-    
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/title_skinAuthor" />
+        <ImageButton
+            android:id="@+id/img_skinApk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/contentDesc_skinImage"
+            android:maxWidth="200dip"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_launcher" />
 
-    <EditText
-        android:id="@+id/txt_skinAuthor"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dip"
-        android:hint="@string/hint_skinAuthor" />
-    
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/title_skinPict" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_skinPict" />
 
-    <EditText
-        android:id="@+id/txt_skinPict"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dip"
-        android:hint="@string/hint_skinPict" />
-    
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/title_skinApk" />
+        <ImageButton
+            android:id="@+id/img_skinPict"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/contentDesc_skinImage"
+            android:maxWidth="200dip"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_launcher" />
 
-    <EditText
-        android:id="@+id/txt_skinApk"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dip"
-        android:hint="@string/hint_skinApk" />
-    
-    <Button 
-        android:id="@+id/btn_skinUpload"
-        android:layout_width="100dip"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:text="@string/button_upload"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_skinTitle" />
 
-</LinearLayout>
+        <EditText
+            android:id="@+id/txt_skinTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dip"
+            android:hint="@string/hint_skinTitle" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_skinDesc" />
+
+        <EditText
+            android:id="@+id/txt_skinDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dip"
+            android:hint="@string/hint_skinDesc" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_skinAuthor" />
+
+        <EditText
+            android:id="@+id/txt_skinAuthor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dip"
+            android:hint="@string/hint_skinAuthor" />
+
+        <Button
+            android:id="@+id/btn_skinUpload"
+            android:layout_width="100dip"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:text="@string/button_upload" />
+    </LinearLayout>
+
+</ScrollView>
