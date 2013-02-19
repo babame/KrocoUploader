@@ -12,6 +12,11 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Base64;
@@ -19,13 +24,18 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 public class Upload extends Activity {
-	private static final String URL = "";
+	private static final String URL = "http://ntahahase.zapto.org/Krocolizer/api.php/skin";
 	private ProgressDialog pDialog;
-	private EditText txt_title, txt_desc, txt_author, txt_pict, txt_apk;
+	private EditText txt_title, txt_desc, txt_author;
+	private ImageButton img_pict, img_apk;
 	private Button btn_upload;
+	private String pictUri, apkUri;
+	private static final int PICT_REQUEST = 1;
+	private static final int APK_REQUEST = 2;
 
 	private JsonParser jParser = new JsonParser();
 
@@ -37,17 +47,76 @@ public class Upload extends Activity {
 		txt_title = (EditText) findViewById(R.id.txt_skinTitle);
 		txt_desc = (EditText) findViewById(R.id.txt_skinDesc);
 		txt_author = (EditText) findViewById(R.id.txt_skinAuthor);
-		txt_pict = (EditText) findViewById(R.id.txt_skinPict);
-		txt_apk = (EditText) findViewById(R.id.txt_skinApk);
+		img_pict = (ImageButton) findViewById(R.id.img_skinPict);
+		img_pict.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(Upload.this, FileChooser.class);
+				i.putExtra("filetype", new String[] { "png", "jpg", "bmp" });
+				startActivityForResult(i, PICT_REQUEST);
+			}
+		});
+		img_apk = (ImageButton) findViewById(R.id.img_skinApk);
+		img_apk.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(Upload.this, FileChooser.class);
+				i.putExtra("filetype", new String[] { "apk" });
+				startActivityForResult(i, APK_REQUEST);
+			}
+		});
 		btn_upload = (Button) findViewById(R.id.btn_skinUpload);
 		btn_upload.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				new UploadSkin().execute();
+				if (null == pictUri)
+					Toast.makeText(Upload.this, "No Picture selected",
+							Toast.LENGTH_LONG).show();
+				else
+					new UploadSkin().execute();
 			}
 		});
+	}
 
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (requestCode) {
+		case PICT_REQUEST:
+			if (resultCode == RESULT_OK) {
+				Bundle extras = data.getExtras();
+				if (null != extras.getString("result")) {
+					pictUri = extras.getString("result");
+					Bitmap b = BitmapFactory.decodeFile(pictUri);
+					img_pict.setImageBitmap(b);
+				}
+			}
+			break;
+		case APK_REQUEST:
+			if (resultCode == RESULT_OK) {
+				Bundle extras = data.getExtras();
+				if (null != extras.getString("result")) {
+					apkUri = extras.getString("result");
+					PackageManager pm = getPackageManager();
+					PackageInfo pi = pm.getPackageArchiveInfo(apkUri, 0);
+
+					pi.applicationInfo.sourceDir = apkUri;
+					pi.applicationInfo.publicSourceDir = apkUri;
+
+					pi.applicationInfo.loadIcon(pm);
+					img_apk.setImageDrawable(pi.applicationInfo.loadIcon(pm));
+					txt_title.setText(pi.applicationInfo.loadLabel(pm));
+					if (null != pi.applicationInfo.loadDescription(pm))
+						txt_desc.setText(pi.applicationInfo.loadDescription(pm));
+				}
+			}
+			break;
+		default:
+			break;
+		}
 	}
 
 	/**
@@ -95,11 +164,13 @@ public class Upload extends Activity {
 		protected Integer doInBackground(String... args) {
 			String title = txt_title.getText().toString(), desc = txt_desc
 					.getText().toString(), author = txt_author.getText()
-					.toString(), pict = txt_pict.getText().toString(), apk = txt_apk
-					.getText().toString();
+					.toString();
 			int success = 0;
-			File filepict = new File(pict);
-			File fileApk = new File(apk);
+			File filepict = null, fileApk = null;
+			if (null != pictUri)
+				filepict = new File(pictUri);
+			if (null != apkUri)
+				fileApk = new File(apkUri);
 			try {
 				byte[] pictByteArray = FileUtils.readFileToByteArray(filepict);
 				byte[] apkByteArray = FileUtils.readFileToByteArray(fileApk);
