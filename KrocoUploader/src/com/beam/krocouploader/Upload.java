@@ -72,13 +72,25 @@ public class Upload extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				if (null == pictUri)
-					Toast.makeText(Upload.this, "No Picture selected",
-							Toast.LENGTH_LONG).show();
+				if (null == pictUri && null == apkUri)
+					makeToast("No Apk and Image Selected!").show();
+				else if (null == pictUri)
+					makeToast("No Picture Selected!").show();
+				else if (null == apkUri)
+					makeToast("No Apk Selected!").show();
+				else if (null == txt_title.getText().toString().trim()
+						|| null == txt_desc.getText().toString().trim()
+						|| null == txt_author.getText().toString().trim())
+					makeToast("All or one of the required field(s) is empty")
+							.show();
 				else
 					new UploadSkin().execute();
 			}
 		});
+	}
+
+	private Toast makeToast(String text) {
+		return Toast.makeText(this, text, Toast.LENGTH_SHORT);
 	}
 
 	@Override
