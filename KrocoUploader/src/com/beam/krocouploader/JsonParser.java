@@ -22,7 +22,7 @@ import android.os.Environment;
 import android.util.Log;
 
 public class JsonParser {
-	boolean DEBUG = true;
+	boolean DEBUG = false;
 
 	static InputStream is = null;
 	static JSONObject jObj = null;
