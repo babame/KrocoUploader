@@ -29,6 +29,10 @@
             android:name=".Upload"
             android:label="@string/title_upload" >
         </activity>
+        <activity
+            android:name=".FileChooser"
+            android:label="@string/title_chooser" >
+        </activity>
     </application>
 
 </manifest>
