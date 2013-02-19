@@ -15,5 +15,7 @@
     <string name="title_skinApk">apk file path</string>
     <string name="hint_skinApk">/mnt/sdcard/helloskin.apk</string>
     <string name="title_upload">Upload a skin</string>
+    <string name="contentDesc_skinImage">Skin Image</string>
+    <string name="title_chooser">File Chooser</string>
 
 </resources>
