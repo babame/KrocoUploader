@@ -1,9 +1,12 @@
 package com.beam.krocouploader;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 
 import org.apache.http.HttpEntity;
@@ -15,9 +18,11 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.os.Environment;
 import android.util.Log;
 
 public class JsonParser {
+	boolean DEBUG = true;
 
 	static InputStream is = null;
 	static JSONObject jObj = null;
@@ -78,10 +83,20 @@ public class JsonParser {
 			}
 			is.close();
 			json = sb.toString();
+			if (DEBUG) {
+				File myFile = new File(Environment
+						.getExternalStorageDirectory().getAbsolutePath()
+						+ File.separator + "respond.html");
+				myFile.createNewFile();
+				FileOutputStream fOut = new FileOutputStream(myFile);
+				OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
+				myOutWriter.append(json);
+				myOutWriter.close();
+				fOut.close();
+			}
 		} catch (Exception e) {
 			Log.e("Buffer Error", "Error converting result " + e.toString());
 		}
-
 		// try parse the string to a JSON object
 		try {
 			jObj = new JSONObject(json);
