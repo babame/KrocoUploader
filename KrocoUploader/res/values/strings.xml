@@ -2,20 +2,32 @@
 <resources>
 
     <string name="app_name">KrocoUploader</string>
+
+    <!-- Button -->
     <string name="button_upload">Upload</string>
     <string name="button_viewList">View List</string>
-    <string name="title_skinTitle">Title</string>
-    <string name="hint_skinTitle">Title goes here&#8230;!</string>
-    <string name="title_skinDesc">Description</string>
-    <string name="hint_skinDesc">Some interesting description&#8230;</string>
-    <string name="title_skinAuthor">Author</string>
-    <string name="hint_skinAuthor">The Author of the skin, of course&#8230;</string>
-    <string name="title_skinPict">Picture</string>
-    <string name="hint_skinPict">/mnt/sdcard/SWAG.jpg</string>
-    <string name="title_skinApk">apk file path</string>
-    <string name="hint_skinApk">/mnt/sdcard/helloskin.apk</string>
-    <string name="title_upload">Upload a skin</string>
-    <string name="contentDesc_skinImage">Skin Image</string>
+    <string name="btn_update">Update</string>
+    <string name="btn_delete">Delete</string>
+
+    <!-- Title -->
     <string name="title_chooser">File Chooser</string>
+    <string name="title_krocoList">Skin List</string>
+    <string name="title_skinTitle">Title</string>
+    <string name="title_skinDesc">Description</string>
+    <string name="title_skinAuthor">Author</string>
+    <string name="title_skinPict">Picture</string>
+    <string name="title_skinApk">apk file path</string>
+    <string name="title_upload">Upload a skin</string>
+
+    <!-- Hint -->
+    <string name="hint_skinTitle">Title goes here&#8230;!</string>
+    <string name="hint_skinDesc">Some interesting description&#8230;</string>
+    <string name="hint_skinAuthor">The Author of the skin, of course&#8230;</string>
+    <string name="hint_skinPict">/mnt/sdcard/SWAG.jpg</string>
+    <string name="hint_skinApk">/mnt/sdcard/helloskin.apk</string>
+
+    <!-- ContentDesciption -->
+    <string name="contentDesc_skinImage">Skin Image</string>
+    <string name="contentDesc_downloadImage">Download Button</string>
 
 </resources>
