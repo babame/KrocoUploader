@@ -12,7 +12,10 @@ import java.io.UnsupportedEncodingException;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
@@ -41,18 +44,16 @@ public class JsonParser {
 		StringEntity se = null;
 		// set entity
 		try {
-			se = new StringEntity(params.toString());
+			if (null != params)
+				se = new StringEntity(params.toString());
 		} catch (UnsupportedEncodingException e1) {
 			e1.printStackTrace();
 		}
 		// Making HTTP request
 		try {
-
+			DefaultHttpClient httpClient = new DefaultHttpClient();
 			// check for request method
 			if (method == "POST") {
-				// request method is POST
-				// defaultHttpClient
-				DefaultHttpClient httpClient = new DefaultHttpClient();
 				HttpPost httpPost = new HttpPost(url);
 				httpPost.setEntity(se);
 				httpPost.setHeader("Accept", "application/json");
@@ -60,10 +61,24 @@ public class JsonParser {
 				HttpResponse httpResponse = httpClient.execute(httpPost);
 				HttpEntity httpEntity = httpResponse.getEntity();
 				is = httpEntity.getContent();
-
 			} else if (method == "GET") {
-				// request method is GET
-				// TODO later :p
+				HttpGet httpGet = new HttpGet(url);
+				HttpResponse httpResponse = httpClient.execute(httpGet);
+				HttpEntity httpEntitiy = httpResponse.getEntity();
+				is = httpEntitiy.getContent();
+			} else if (method == "PUT") {
+				HttpPut httpPut = new HttpPut(url);
+				httpPut.setEntity(se);
+				httpPut.setHeader("Accept", "application/json");
+				httpPut.setHeader("Content-type", "application/json");
+				HttpResponse httpResponse = httpClient.execute(httpPut);
+				HttpEntity httpEntity = httpResponse.getEntity();
+				is = httpEntity.getContent();
+			} else if (method == "DELETE") {
+				HttpDelete httpDelete = new HttpDelete(url);
+				HttpResponse httpResponse = httpClient.execute(httpDelete);
+				HttpEntity httpEntitiy = httpResponse.getEntity();
+				is = httpEntitiy.getContent();
 			}
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
