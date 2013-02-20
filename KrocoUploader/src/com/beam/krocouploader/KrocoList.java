@@ -39,6 +39,7 @@ public class KrocoList extends ListActivity {
 		Intent i = new Intent(this, SingleSkinView.class);
 		i.putExtra("id", skinId);
 		startActivity(i);
+		finish();
 	}
 
 	private void getSkin() {
@@ -63,7 +64,7 @@ public class KrocoList extends ListActivity {
 			try {
 				int success = json.getInt("success");
 				if (success == 1) {
-					skinsList = new ArrayList<HashMap<String,String>>();
+					skinsList = new ArrayList<HashMap<String, String>>();
 					skins = json.getJSONArray("skins");
 					for (int i = 0; i < skins.length(); i++) {
 						JSONObject c = skins.getJSONObject(i);
