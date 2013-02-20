@@ -19,7 +19,7 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 public class KrocoList extends ListActivity {
-	private static final String URL = "http://ntahahase.zapto.org/Krocolizer/api.php/skins";
+	private static final String URL = "";
 	private ProgressDialog pDialog;
 	private JsonParser jParser = new JsonParser();
 	private JSONArray skins = null;
