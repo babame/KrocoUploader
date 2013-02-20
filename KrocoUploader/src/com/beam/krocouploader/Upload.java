@@ -28,7 +28,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 public class Upload extends Activity {
-	private static final String URL = "";
+	private static final String URL = "http://ntahahase.zapto.org/Krocolizer/api.php/skin";
 	private ProgressDialog pDialog;
 	private EditText txt_title, txt_desc, txt_author;
 	private ImageButton img_pict, img_apk;
