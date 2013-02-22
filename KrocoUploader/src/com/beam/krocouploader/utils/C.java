@@ -3,7 +3,7 @@ package com.beam.krocouploader.utils;
 /* Constant Class */
 public class C {
 	/* URL */
-	public static final String URL = "http://nebeng.fortweet.net/omg/api.php/";
+	public static final String URL = "";
 	
 	/* Chooser things */
 	public static final String FILETYPE = "filetype";
