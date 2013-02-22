@@ -1,4 +1,4 @@
-package com.beam.krocouploader;
+package com.beam.krocouploader.chooser;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -13,11 +13,17 @@ import android.os.Environment;
 import android.view.View;
 import android.widget.ListView;
 
+import com.beam.krocouploader.R;
+import com.beam.krocouploader.utils.C;
+
 public class FileChooser extends ListActivity {
 	private File currentDir;
 	private FileArrayAdapter adapter;
+	
 	private Stack<File> dirStack = new Stack<File>();
+	
 	private String[] filetype = null;
+	
 	private Intent resultIntent;
 
 	@Override
@@ -25,7 +31,7 @@ public class FileChooser extends ListActivity {
 		super.onCreate(savedInstanceState);
 		Bundle extras = getIntent().getExtras();
 		if (null != extras) {
-			filetype = extras.getStringArray("filetype");
+			filetype = extras.getStringArray(C.FILETYPE);
 		}
 		currentDir = new File(Environment.getExternalStorageDirectory()
 				.getAbsolutePath());

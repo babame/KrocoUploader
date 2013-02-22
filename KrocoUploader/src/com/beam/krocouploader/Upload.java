@@ -10,6 +10,9 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.beam.krocouploader.chooser.FileChooser;
+import com.beam.krocouploader.utils.C;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -28,14 +31,11 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 public class Upload extends Activity {
-	private static final String URL = "";
 	private ProgressDialog pDialog;
 	private EditText txt_title, txt_desc, txt_author;
 	private ImageButton img_pict, img_apk;
 	private Button btn_upload;
 	private String pictUri, apkUri;
-	private static final int PICT_REQUEST = 1;
-	private static final int APK_REQUEST = 2;
 
 	private JsonParser jParser = new JsonParser();
 
@@ -53,8 +53,8 @@ public class Upload extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent i = new Intent(Upload.this, FileChooser.class);
-				i.putExtra("filetype", new String[] { "png", "jpg", "bmp" });
-				startActivityForResult(i, PICT_REQUEST);
+				i.putExtra(C.FILETYPE, C.IMAGE);
+				startActivityForResult(i, C.PICT_REQUEST);
 			}
 		});
 		img_apk = (ImageButton) findViewById(R.id.img_skinApk);
@@ -63,8 +63,8 @@ public class Upload extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent i = new Intent(Upload.this, FileChooser.class);
-				i.putExtra("filetype", new String[] { "apk" });
-				startActivityForResult(i, APK_REQUEST);
+				i.putExtra(C.FILETYPE, C.APK);
+				startActivityForResult(i, C.APK_REQUEST);
 			}
 		});
 		btn_upload = (Button) findViewById(R.id.btn_skinUpload);
@@ -92,7 +92,7 @@ public class Upload extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		switch (requestCode) {
-		case PICT_REQUEST:
+		case C.PICT_REQUEST:
 			if (resultCode == RESULT_OK) {
 				Bundle extras = data.getExtras();
 				if (null != extras.getString("result")) {
@@ -102,7 +102,7 @@ public class Upload extends Activity {
 				}
 			}
 			break;
-		case APK_REQUEST:
+		case C.APK_REQUEST:
 			if (resultCode == RESULT_OK) {
 				Bundle extras = data.getExtras();
 				if (null != extras.getString("result")) {
@@ -190,7 +190,7 @@ public class Upload extends Activity {
 				params.put("img", pictEnc);
 				params.put("apk", apkEnc);
 				params.put("apk_name", fileApk.getName());
-				JSONObject json = jParser.makeHttpRequest(URL, "POST", params);
+				JSONObject json = jParser.makeHttpRequest(C.URL + "skin", "POST", params);
 				try {
 					int result = json.getInt("success");
 					String md5 = json.getString("md5");

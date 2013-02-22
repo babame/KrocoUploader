@@ -1,4 +1,4 @@
-package com.beam.krocouploader;
+package com.beam.krocouploader.chooser;
 
 import java.util.List;
 
@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import com.beam.krocouploader.R;
 
 public class FileArrayAdapter extends ArrayAdapter<Option> {
 	private Context c;

@@ -1,4 +1,4 @@
-package com.beam.krocouploader;
+package com.beam.krocouploader.chooser;
 
 import java.util.Locale;
 

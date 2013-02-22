@@ -27,7 +27,7 @@
         </activity>
         <activity
             android:name=".KrocoList"
-            android:label="@string/title_krocoList" >
+            android:label="@string/title_krocoList">
         </activity>
         <activity
             android:name=".Upload"
