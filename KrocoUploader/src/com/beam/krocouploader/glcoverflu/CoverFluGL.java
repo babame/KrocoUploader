@@ -27,13 +27,14 @@ public class CoverFluGL extends GLSurfaceView implements Renderer {
 	private static final int TOUCH_MINIMUM_MOVE = 5;
 	private static final int IMAGE_SIZE = 320; // the bitmap size we use for texture
 	private static final int MAX_TILES = 48; // the maximum tiles in the cache
-	private static final int VISIBLE_TILES = 3; // the visible tiles left and right
+	public static final int VISIBLE_TILES = 3; // the visible tiles left and right
 
 	private static final float SCALE = 0.7f; // the scale of surface view
 	private static final float SPREAD_IMAGE = 0.14f;
 	private static final float FLANK_SPREAD = 0.3f;
 	private static final float FRICTION = 5.0f;
 	private static final float MAX_SPEED = 6.0f;
+	private static float SENSITIVITY = 3;
 
 	private static final float[] GVertices = new float[] { 
 		-1.0f, -1.0f, 0.0f,
@@ -104,6 +105,10 @@ public class CoverFluGL extends GLSurfaceView implements Renderer {
 	public void setCoverFluListener(CoverFluListener listener) {
 		mListener = listener;
 	}
+	
+	public void setSensitivity(float sensitivity) {
+		SENSITIVITY = sensitivity;
+	}
 
 	private float checkValid(float off) {
 		int max = mListener.getCount(this) - 1;
@@ -115,6 +120,7 @@ public class CoverFluGL extends GLSurfaceView implements Renderer {
 	}
 
 	public void setSelection(int position) {
+		mListener.tileOnTop(this, position);
 		endAnimation();
 		mOffset = position;
 		requestRender();
@@ -148,7 +154,7 @@ public class CoverFluGL extends GLSurfaceView implements Renderer {
 
 		mTouchMoved = false;
 
-		mTouchStartPos = (x / mWidth) * 10 - 5;
+		mTouchStartPos = (x / mWidth) * SENSITIVITY - 5;
 		mTouchStartPos /= 2;
 
 		mVelocity = VelocityTracker.obtain();
@@ -156,7 +162,7 @@ public class CoverFluGL extends GLSurfaceView implements Renderer {
 	}
 
 	private void touchMoved(MotionEvent event) {
-		float pos = (event.getX() / mWidth) * 10 - 5;
+		float pos = (event.getX() / mWidth) * SENSITIVITY - 5;
 		pos /= 2;
 
 		if (!mTouchMoved) {
@@ -176,7 +182,7 @@ public class CoverFluGL extends GLSurfaceView implements Renderer {
 	}
 
 	private void touchEnded(MotionEvent event) {
-		float pos = (event.getX() / mWidth) * 10 - 5;
+		float pos = (event.getX() / mWidth) * SENSITIVITY - 5;
 		pos /= 2;
 
 		if (mTouchMoved) {
@@ -267,6 +273,23 @@ public class CoverFluGL extends GLSurfaceView implements Renderer {
 	}
 
 	@Override
+	public void onDrawFrame(GL10 gl) {
+		gl.glMatrixMode(GL10.GL_MODELVIEW);
+		gl.glLoadIdentity();
+		GLU.gluLookAt(gl, 0, 0, 2, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+
+		gl.glDisable(GL10.GL_DEPTH_TEST);
+		gl.glClearColor(0, 0, 0, 0);
+		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+
+		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+
+		drawBg(gl);
+		draw(gl);
+	}
+	
+	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		mCache.clear();
 
@@ -293,7 +316,7 @@ public class CoverFluGL extends GLSurfaceView implements Renderer {
 		float ratio = ((float) w) / h;
 		gl.glMatrixMode(GL10.GL_PROJECTION);
 		gl.glLoadIdentity();
-		gl.glOrthof(-ratio * SCALE, ratio * SCALE, -1 * SCALE + 0.2f, 1 * SCALE + 0.2f, 1, 3);
+		gl.glOrthof(-ratio * SCALE, ratio * SCALE, -1 * SCALE, 1 * SCALE, 1, 3);
 
 		float[] vertices = new float[] { -ratio * SCALE, -SCALE, 0,
 				ratio * SCALE, -SCALE, 0, -ratio * SCALE, SCALE, 0,
@@ -363,23 +386,6 @@ public class CoverFluGL extends GLSurfaceView implements Renderer {
 					(tmp + h) / 2.0f / tmp };
 			mBgTexturesBuffer = makeFloatBuffer(textcoor);
 		}
-	}
-
-	@Override
-	public void onDrawFrame(GL10 gl) {
-		gl.glMatrixMode(GL10.GL_MODELVIEW);
-		gl.glLoadIdentity();
-		GLU.gluLookAt(gl, 0, 0, 2, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
-
-		gl.glDisable(GL10.GL_DEPTH_TEST);
-		gl.glClearColor(0, 0, 0, 0);
-		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-
-		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-
-		drawBg(gl);
-		draw(gl);
 	}
 
 	public void drawBg(GL10 gl) {
@@ -585,7 +591,7 @@ public class CoverFluGL extends GLSurfaceView implements Renderer {
 		}
 	}
 
-	private static FloatBuffer makeFloatBuffer(final float[] arr) {
+	public static FloatBuffer makeFloatBuffer(final float[] arr) {
 		ByteBuffer bb = ByteBuffer.allocateDirect(arr.length * 4);
 		bb.order(ByteOrder.nativeOrder());
 		FloatBuffer fb = bb.asFloatBuffer();
