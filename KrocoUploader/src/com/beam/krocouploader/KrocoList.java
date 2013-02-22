@@ -22,13 +22,13 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.beam.krocouploader.glcoverflu.CoverFluGL;
+import com.beam.krocouploader.glcoverflu.CoverFluGL.CoverFluListener;
 import com.beam.krocouploader.utils.C;
 import com.beam.krocouploader.utils.FileCache;
 import com.beam.krocouploader.utils.SpannableBuilder;
@@ -62,10 +62,86 @@ public class KrocoList extends Activity {
 	}
 
 	private void getSkin() {
-		new GetKrocoSkin().execute();
+		new GetKrocoSkin(new KrocoAsyncListener()).execute();
+	}
+
+	private class KrocoAsyncListener implements ProcessingListener {
+
+		@Override
+		public void onComplete() {
+			mCoverFlu = new CoverFluGL(KrocoList.this);
+			parentLayout.addView(mCoverFlu, new LayoutParams(
+					LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+			LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT,
+					LayoutParams.WRAP_CONTENT);
+			params.setMargins(0, 20, 0, 0);
+			parentLayout.addView(txt_info, params);
+			mCoverFlu.setCoverFluListener(new KrocoGLCoverGluListener());
+			mCoverFlu.setSelection(0);
+			mCoverFlu.setSensitivity(3.0f);
+			setContentView(parentLayout);
+		}
+	}
+
+	private class KrocoGLCoverGluListener implements CoverFluListener {
+
+		@Override
+		public int getCount(CoverFluGL view) {
+			return IMAGE_ADDR.length;
+		}
+
+		@Override
+		public Bitmap getImage(CoverFluGL anotherCoverFlow, int position) {
+			return BitmapFactory.decodeFile(IMAGE_ADDR[position]);
+		}
+
+		@Override
+		public void tileOnTop(CoverFluGL view, final int position) {
+			SpannableBuilder builder = new SpannableBuilder(KrocoList.this);
+			builder.append(skinsList.get(position).get("title"), Typeface.BOLD)
+					.appendLine()
+					.append("By: " + skinsList.get(position).get("author"),
+							Typeface.ITALIC).appendLine()
+					.append(skinsList.get(position).get("description"));
+			final CharSequence info = builder.toSpannableString();
+			runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					txt_info.setText(info);
+				}
+			});
+		}
+
+		@Override
+		public void topTileClicked(CoverFluGL view, int position) {
+			Intent i = new Intent(KrocoList.this, SingleSkinView.class);
+			i.putExtra("id", skinsList.get(position).get("id"));
+			startActivity(i);
+			finish();
+		}
+
+	}
+
+	/**
+	 * Listener for GetKrocoSkinAsyncTask
+	 * 
+	 * @author adrianbabame
+	 * 
+	 */
+	private static interface ProcessingListener {
+		/**
+		 * Yeah just onComplete
+		 */
+		public void onComplete();
 	}
 
 	private class GetKrocoSkin extends AsyncTask<Void, Void, Void> {
+		private ProcessingListener listener;
+
+		public GetKrocoSkin(ProcessingListener listener) {
+			this.listener = listener;
+		}
 
 		@Override
 		protected void onPreExecute() {
@@ -132,55 +208,7 @@ public class KrocoList extends Activity {
 		@Override
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
-			mCoverFlu = new CoverFluGL(KrocoList.this);
-			parentLayout.addView(mCoverFlu, new LayoutParams(
-					LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-			LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT,
-					LayoutParams.WRAP_CONTENT);
-			params.gravity = Gravity.CENTER_HORIZONTAL;
-			params.setMargins(0, 20, 0, 0);
-			parentLayout.addView(txt_info, params);
-			mCoverFlu.setCoverFluListener(new CoverFluGL.CoverFluListener() {
-				@Override
-				public int getCount(CoverFluGL view) {
-					return IMAGE_ADDR.length;
-				}
-
-				@Override
-				public Bitmap getImage(CoverFluGL anotherCoverFlow, int position) {
-					return BitmapFactory.decodeFile(IMAGE_ADDR[position]);
-				}
-
-				@Override
-				public void tileOnTop(CoverFluGL view, final int position) {
-					SpannableBuilder builder = new SpannableBuilder(
-							KrocoList.this);
-					builder.append(skinsList.get(position).get("title"),
-							Typeface.BOLD)
-							.appendLine()
-							.append("By: "
-									+ skinsList.get(position).get("author"),
-									Typeface.ITALIC).appendLine()
-							.append(skinsList.get(position).get("description"));
-					final CharSequence info = builder.toSpannableString();
-					runOnUiThread(new Runnable() {
-
-						@Override
-						public void run() {
-							txt_info.setText(info);
-						}
-					});
-				}
-
-				@Override
-				public void topTileClicked(CoverFluGL view, int position) {
-					Intent i = new Intent(KrocoList.this, SingleSkinView.class);
-					i.putExtra("id", skinsList.get(position).get("id"));
-					startActivity(i);
-					finish();
-				}
-			});
-			setContentView(parentLayout);
+			listener.onComplete();
 			if (pDialog.isShowing())
 				pDialog.dismiss();
 		}
