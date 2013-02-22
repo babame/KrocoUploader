@@ -42,24 +42,34 @@ public class SpannableBuilder {
 		this(context);
 		append(text, typeface);
 	}
-	
+
+	/**
+	 * 
+	 * @param context
+	 *            Context of caller
+	 * @param text
+	 *            Text to render
+	 * @param size
+	 *            Size of the text - relative to normal text size
+	 */
 	public SpannableBuilder(Context context, String text, float size) {
 		this(context);
 		append(text, Typeface.NORMAL, size);
 	}
-	
+
 	/**
 	 * 
 	 * @param context
-	 * 			Context of caller
+	 *            Context of caller
 	 * @param text
-	 * 			Text to render
+	 *            Text to render
 	 * @param typeface
-	 * 			Style to use - typically a {@link android.graphics.Typeface}
+	 *            Style to use - typically a {@link android.graphics.Typeface}
 	 * @param size
-	 * 			Size of the text - relative to normal text size
+	 *            Size of the text - relative to normal text size
 	 */
-	public SpannableBuilder(Context context, String text, int typeface, float size) {
+	public SpannableBuilder(Context context, String text, int typeface,
+			float size) {
 		this(context);
 		append(text, typeface, size);
 	}
@@ -96,13 +106,13 @@ public class SpannableBuilder {
 
 		return this;
 	}
-	
+
 	/**
 	 * 
 	 * @param text
-	 * 			New text to append
+	 *            New text to append
 	 * @param size
-	 * 			Size of the text - relative to normal text size
+	 *            Size of the text - relative to normal text size
 	 * @return this SpannableBuilder
 	 */
 	public SpannableBuilder append(String text, float size) {
@@ -112,14 +122,15 @@ public class SpannableBuilder {
 
 		return this;
 	}
+
 	/**
 	 * 
 	 * @param text
-	 * 			New text to append
+	 *            New text to append
 	 * @param typeface
-	 * 			Style to use - typically a {@link android.graphics.Typeface}
+	 *            Style to use - typically a {@link android.graphics.Typeface}
 	 * @param size
-	 * 			Size relative to normal text
+	 *            Size of the text - relative to normal text size
 	 * @return this SpannableBuilder
 	 */
 	public SpannableBuilder append(String text, int typeface, float size) {
@@ -207,7 +218,7 @@ public class SpannableBuilder {
 		int style;
 		float size;
 		int len = 0;
-
+		
 		Holder(String text, int typeface, float relativeSize) {
 			this.text = text;
 			this.style = typeface;
