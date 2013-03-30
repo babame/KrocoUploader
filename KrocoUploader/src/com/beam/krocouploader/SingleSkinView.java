@@ -21,6 +21,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,31 +37,33 @@ import com.beam.krocouploader.utils.C;
 public class SingleSkinView extends Activity implements OnClickListener,
 		android.content.DialogInterface.OnClickListener {
 	private String id = null, pictUri = null, apkUri = null;
-	
+
 	/* View */
 	private ProgressDialog pDialog;
 	private EditText txt_title, txt_desc, txt_author;
 	private ImageButton btn_image, btn_download;
 	private Button btn_update, btn_delete;
-	
+
 	/* Instantiate JsonParser */
 	private JsonParser jParser = new JsonParser();
 	/* Defining data here, workaround for AsyncTask data-passing limitation */
 	private HashMap<String, String> data;
 
 	/* Defining integer for visual reference and code completion only */
-	/* Yea integer, because its the easiest way to deal with switch case */ 
+	/* Yea integer, because its the easiest way to deal with switch case */
 	private static final int FETCH = 0;
 	private static final int DELETE = 1;
 	private static final int UPDATE = 2;
 	
+	private String imei;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		/* Get extras we've passed before */
 		Intent i = getIntent();
 		id = i.getStringExtra("id");
-		
+
 		setContentView(R.layout.skin_view);
 
 		/* Find view */
@@ -77,6 +80,8 @@ public class SingleSkinView extends Activity implements OnClickListener,
 		btn_update.setOnClickListener(this);
 		btn_delete.setOnClickListener(this);
 
+		TelephonyManager tel = (TelephonyManager) this.getSystemService(TELEPHONY_SERVICE);
+		imei = tel.getDeviceId();
 		/* Fill form */
 		fillForm(id);
 	}
@@ -236,15 +241,18 @@ public class SingleSkinView extends Activity implements OnClickListener,
 		protected HashMap<String, Integer> doInBackground(Integer... type) {
 			HashMap<String, Integer> result = new HashMap<String, Integer>();
 			result.put("type", type[0]);
-			/* type[0] because we only passing 1 data and it should be at the first index (0) */
+			/*
+			 * type[0] because we only passing 1 data and it should be at the
+			 * first index (0)
+			 */
 			switch (type[0]) {
 			case FETCH:
 				/* Instantiate new data */
 				data = new HashMap<String, String>();
 				/* Make http request */
-				JSONObject fetch = jParser.makeHttpRequest(C.URL + id, "GET",
-						null);
 				try {
+					JSONObject fetch = jParser.makeHttpRequest(C.URL + id,
+							"GET", null);
 					int success = fetch.getInt("success");
 					if (success == 1) {
 						JSONObject skin = fetch.getJSONObject("skin");
@@ -260,11 +268,13 @@ public class SingleSkinView extends Activity implements OnClickListener,
 					e.printStackTrace();
 					result.put("success", 0);
 					return result;
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			case DELETE:
-				JSONObject delete = jParser.makeHttpRequest(C.URL + "skin/" + id,
-						"DELETE", null);
 				try {
+					JSONObject delete = jParser.makeHttpRequest(C.URL + "skin/"
+							+ id, "DELETE", null);
 					int success = delete.getInt("success");
 					result.put("success", success);
 					return result;
@@ -272,6 +282,8 @@ public class SingleSkinView extends Activity implements OnClickListener,
 					e.printStackTrace();
 					result.put("success", 0);
 					return result;
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			case UPDATE:
 				String title = txt_title.getText().toString(),
@@ -296,6 +308,7 @@ public class SingleSkinView extends Activity implements OnClickListener,
 						String apkEnc = Base64.encodeToString(apkByteArray, 0);
 						params.put("apk", apkEnc);
 					}
+					params.put("imei", imei);
 					params.put("title", title);
 					params.put("author", author);
 					params.put("description", desc);
@@ -363,12 +376,13 @@ public class SingleSkinView extends Activity implements OnClickListener,
 		ImageView bmImage;
 
 		/**
-		 * Constructor
-		 * We don't need it anyway, because we can interact with parents UI
-		 * in onPostExecute function...But I just copying this from random citizen 
-		 * of the browserland and to lazy to edit it. 
-		 * Credits goes to original author as always :)
-		 * @param bmImage ImageView that we used to change its image source
+		 * Constructor We don't need it anyway, because we can interact with
+		 * parents UI in onPostExecute function...But I just copying this from
+		 * random citizen of the browserland and to lazy to edit it. Credits
+		 * goes to original author as always :)
+		 * 
+		 * @param bmImage
+		 *            ImageView that we used to change its image source
 		 */
 		public DownloadImageTask(ImageView bmImage) {
 			this.bmImage = bmImage;
