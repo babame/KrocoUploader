@@ -2,6 +2,7 @@ package com.beam.krocouploader;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -78,7 +79,7 @@ public class KrocoList extends Activity {
 			parentLayout.addView(txt_info, params);
 			mCoverFlu.setCoverFluListener(new KrocoGLCoverGluListener());
 			mCoverFlu.setSelection(0);
-			mCoverFlu.setSensitivity(3.0f);
+			mCoverFlu.setSensitivity(1.5f);
 			setContentView(parentLayout);
 		}
 	}
@@ -155,9 +156,9 @@ public class KrocoList extends Activity {
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			JSONObject json = jParser.makeHttpRequest(C.URL + "skins", "GET",
-					null);
 			try {
+				JSONObject json = jParser.makeHttpRequest(C.URL + "skins", "GET",
+						null);
 				int success = json.getInt("success");
 				if (success == 1) {
 					ArrayList<String> stringArrayList = new ArrayList<String>();
@@ -200,6 +201,9 @@ public class KrocoList extends Activity {
 					// no skins found
 				}
 			} catch (JSONException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			return null;
