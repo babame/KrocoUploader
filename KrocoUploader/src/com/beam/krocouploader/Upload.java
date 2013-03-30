@@ -10,9 +10,6 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.beam.krocouploader.chooser.FileChooser;
-import com.beam.krocouploader.utils.C;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -22,6 +19,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,12 +28,15 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.beam.krocouploader.chooser.FileChooser;
+import com.beam.krocouploader.utils.C;
+
 public class Upload extends Activity {
 	private ProgressDialog pDialog;
 	private EditText txt_title, txt_desc, txt_author;
 	private ImageButton img_pict, img_apk;
 	private Button btn_upload;
-	private String pictUri, apkUri;
+	private String pictUri, apkUri, imei;
 
 	private JsonParser jParser = new JsonParser();
 
@@ -43,7 +44,6 @@ public class Upload extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_upload);
-
 		txt_title = (EditText) findViewById(R.id.txt_skinTitle);
 		txt_desc = (EditText) findViewById(R.id.txt_skinDesc);
 		txt_author = (EditText) findViewById(R.id.txt_skinAuthor);
@@ -57,6 +57,8 @@ public class Upload extends Activity {
 				startActivityForResult(i, C.PICT_REQUEST);
 			}
 		});
+		TelephonyManager tel = (TelephonyManager) this.getSystemService(TELEPHONY_SERVICE);
+		imei = tel.getDeviceId();
 		img_apk = (ImageButton) findViewById(R.id.img_skinApk);
 		img_apk.setOnClickListener(new OnClickListener() {
 
@@ -184,6 +186,7 @@ public class Upload extends Activity {
 				String pictEnc = Base64.encodeToString(pictByteArray, 0);
 				String apkEnc = Base64.encodeToString(apkByteArray, 0);
 				JSONObject params = new JSONObject();
+				params.put("imei", imei);
 				params.put("title", title);
 				params.put("author", author);
 				params.put("description", desc);
