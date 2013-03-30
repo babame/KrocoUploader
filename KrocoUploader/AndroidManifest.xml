@@ -9,7 +9,11 @@
         android:targetSdkVersion="17" />
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 
     <application
         android:allowBackup="true"
@@ -36,9 +40,22 @@
         <activity android:name=".SingleSkinView" >
         </activity>
         <activity
-            android:name=".FileChooser"
+            android:name=".chooser.FileChooser"
             android:label="@string/title_chooser" >
         </activity>
+        
+        <receiver 
+            android:name="com.google.android.gcm.GCMBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <!-- Receives the actual messages -->
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <!-- Receives the registration id -->
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+                <category android:name="com.beam.krocouploader"/>
+            </intent-filter>
+        </receiver>
+        <service android:name=".GCMIntentService"/>
     </application>
 
 </manifest>
