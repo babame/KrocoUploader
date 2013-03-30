@@ -13,7 +13,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLSurfaceView.Renderer;
@@ -25,30 +24,28 @@ import android.view.animation.AnimationUtils;
 
 public class CoverFluGL extends GLSurfaceView implements Renderer {
 	private static final int TOUCH_MINIMUM_MOVE = 5;
-	private static final int IMAGE_SIZE = 320; // the bitmap size we use for texture
 	private static final int MAX_TILES = 48; // the maximum tiles in the cache
-	public static final int VISIBLE_TILES = 3; // the visible tiles left and right
+	public static final int VISIBLE_TILES = 3; // the visible tiles left and
+												// right
 
-	private static final float SCALE = 0.7f; // the scale of surface view
-	private static final float SPREAD_IMAGE = 0.14f;
-	private static final float FLANK_SPREAD = 0.3f;
+	private static final float SCALE = 1.2f; // the scale of surface view
+	private static final float SPREAD_IMAGE = 0.3f;
+	private static final float FLANK_SPREAD = 0.2f;
 	private static final float FRICTION = 5.0f;
 	private static final float MAX_SPEED = 6.0f;
 	private static float SENSITIVITY = 3;
 
+	private static int SS_SUNLIGHT = GL10.GL_LIGHT0;
+
 	private static final float[] GVertices = new float[] { 
-		-1.0f, -1.0f, 0.0f,
-		 1.0f, -1.0f, 0.0f,
-		-1.0f,  1.0f, 0.0f,
-		 1.0f,  1.0f, 0.0f 
+		-1.4f, -1.6f, 0.0f,
+		 1.0f, -1.6f, 0.0f, 
+		-1.4f,  1.6f, 0.0f, 
+		 1.0f,  1.6f, 0.0f 
 	};
 
-	private static final float[] GTextures = new float[] { 
-		0.0f, 1.0f,
-		1.0f, 1.0f, 
-		0.0f, 0.0f, 
-		1.0f, 0.0f 
-	};
+	private static final float[] GTextures = new float[] { 0.0f, 1.0f, 1.0f,
+			1.0f, 0.0f, 0.0f, 1.0f, 0.0f };
 
 	private GL10 mGLContext;
 	private FloatBuffer mVerticesBuffer;
@@ -105,7 +102,7 @@ public class CoverFluGL extends GLSurfaceView implements Renderer {
 	public void setCoverFluListener(CoverFluListener listener) {
 		mListener = listener;
 	}
-	
+
 	public void setSensitivity(float sensitivity) {
 		SENSITIVITY = sensitivity;
 	}
@@ -194,6 +191,7 @@ public class CoverFluGL extends GLSurfaceView implements Renderer {
 
 			mVelocity.computeCurrentVelocity(10);
 			double speed = mVelocity.getXVelocity();
+			mVelocity.recycle();
 			speed = (speed / mWidth) * 2;
 			if (speed > MAX_SPEED)
 				speed = MAX_SPEED;
@@ -276,7 +274,7 @@ public class CoverFluGL extends GLSurfaceView implements Renderer {
 	public void onDrawFrame(GL10 gl) {
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
 		gl.glLoadIdentity();
-		GLU.gluLookAt(gl, 0, 0, 2, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+		GLU.gluLookAt(gl, 0, 0, 3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
 
 		gl.glDisable(GL10.GL_DEPTH_TEST);
 		gl.glClearColor(0, 0, 0, 0);
@@ -288,7 +286,7 @@ public class CoverFluGL extends GLSurfaceView implements Renderer {
 		drawBg(gl);
 		draw(gl);
 	}
-	
+
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		mCache.clear();
@@ -296,6 +294,23 @@ public class CoverFluGL extends GLSurfaceView implements Renderer {
 		mGLContext = gl;
 		mVerticesBuffer = makeFloatBuffer(GVertices);
 		mTexturesBuffer = makeFloatBuffer(GTextures);
+		initLighting(gl);
+	}
+
+	private void initLighting(GL10 gl) {
+		float[] white = { 1.0f, 1.0f, 1.0f, 1.0f };
+		float[] yellow = { 1.0f, 1.0f, 0.0f, 1.0f };
+		float[] pos = { 0.0f, 3.0f, 1.0f, 1.0f };
+
+		gl.glLightfv(SS_SUNLIGHT, GL10.GL_POSITION, makeFloatBuffer(pos));
+		gl.glLightfv(SS_SUNLIGHT, GL10.GL_DIFFUSE, makeFloatBuffer(white));
+		gl.glLightfv(SS_SUNLIGHT, GL10.GL_SPECULAR, makeFloatBuffer(yellow));
+		gl.glShadeModel(GL10.GL_SMOOTH);
+
+		gl.glEnable(GL10.GL_LIGHTING);
+		gl.glEnable(SS_SUNLIGHT);
+		
+		gl.glLoadIdentity();
 	}
 
 	@Override
@@ -316,7 +331,7 @@ public class CoverFluGL extends GLSurfaceView implements Renderer {
 		float ratio = ((float) w) / h;
 		gl.glMatrixMode(GL10.GL_PROJECTION);
 		gl.glLoadIdentity();
-		gl.glOrthof(-ratio * SCALE, ratio * SCALE, -1 * SCALE, 1 * SCALE, 1, 3);
+		gl.glOrthof(-ratio * SCALE , ratio * SCALE, -1 * SCALE, 1 * SCALE, 1, 3);
 
 		float[] vertices = new float[] { -ratio * SCALE, -SCALE, 0,
 				ratio * SCALE, -SCALE, 0, -ratio * SCALE, SCALE, 0,
@@ -409,7 +424,6 @@ public class CoverFluGL extends GLSurfaceView implements Renderer {
 	private void draw(GL10 gl) {
 		mStopBackgroundThread = true;
 		gl.glPushMatrix();
-
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, mVerticesBuffer); // vertices of square
 		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, mTexturesBuffer); // texture vertices
 		gl.glEnable(GL10.GL_TEXTURE_2D);
@@ -468,20 +482,27 @@ public class CoverFluGL extends GLSurfaceView implements Renderer {
 
 			mMatrix[3] = -f;
 			mMatrix[0] = 1 - Math.abs(f);
-			float sc = 0.38f * mMatrix[0];
-			trans += f * 1;
-
+			float sc;
+			boolean left = -f <= 0;
+			if (left) {
+				sc = .5f * mMatrix[0];
+				trans += f * 1;
+			} else {
+				sc = .5f;
+				trans += f * 7.27f;
+			}
 			gl.glPushMatrix();
 			gl.glBindTexture(GL10.GL_TEXTURE_2D, fcr.mTexture); // bind texture
 
 			// draw bitmap
-			gl.glTranslatef(trans, 0, 0); // translate the picture to the right position
+			gl.glTranslatef(trans, 0, 0); // translate the picture
+			// position
 			gl.glScalef(sc, sc, 1.0f); // scale the picture
-			gl.glMultMatrixf(mMatrix, 0); // rotate the picture
+			// gl.glMultMatrixf(mMatrix, 0); // rotate the picture on z axis
 			gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
 
 			// draw the reflection
-			gl.glTranslatef(0, -2.05f, 0);
+			gl.glTranslatef(0, -3.3f, 0);
 			gl.glScalef(1, -1, 1);
 			gl.glColor4f(1f, 1f, 1f, 0.5f);
 			gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
@@ -509,48 +530,14 @@ public class CoverFluGL extends GLSurfaceView implements Renderer {
 		}
 	}
 
-	private static Bitmap createTextureBitmap(Bitmap bitmap) {
-		int width = bitmap.getWidth();
-		int height = bitmap.getHeight();
-		final Bitmap bm = Bitmap.createBitmap(IMAGE_SIZE, IMAGE_SIZE,
-				Bitmap.Config.ARGB_8888);
-		Canvas cv = new Canvas(bm);
-		if (width > IMAGE_SIZE || height > IMAGE_SIZE) {
-			// scale the bitmap, make the width or height to the IMAGE_SIZE
-			Rect src = new Rect(0, 0, width, height);
-
-			float scale = 1.0f;
-			if (width > height)
-				scale = ((float) IMAGE_SIZE) / width;
-			else
-				scale = ((float) IMAGE_SIZE) / height;
-			width = (int) (width * scale);
-			height = (int) (height * scale);
-			float left = (IMAGE_SIZE - width) / 2.0f;
-			float top = (IMAGE_SIZE - height) / 2.0f;
-			RectF dst = new RectF(left, top, left + width, top + height);
-
-			cv.drawBitmap(bitmap, src, dst, new Paint());
-		} else {
-			float left = (IMAGE_SIZE - width) / 2.0f;
-			float top = (IMAGE_SIZE - height) / 2.0f;
-			cv.drawBitmap(bitmap, left, top, new Paint());
-		}
-
-		return bm;
-	}
-
 	private int imageToTexture(Bitmap bitmap, GL10 gl) {
 		// generate texture
 		int[] texture = new int[1];
 		gl.glGenTextures(1, texture, 0);
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, texture[0]);
+		GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0); // draw the bitmap in the texture
 
-		final Bitmap bm = createTextureBitmap(bitmap);
 		bitmap.recycle();
-		GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bm, 0); // draw the bitmap in the texture
-		bm.recycle();
-
 		// some texture settings
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER,
 				GL10.GL_NEAREST);
@@ -621,8 +608,17 @@ public class CoverFluGL extends GLSurfaceView implements Renderer {
 
 	public static interface CoverFluListener {
 		public int getCount(CoverFluGL view); // Number of images to display
-		public Bitmap getImage(CoverFluGL anotherCoverFlow, int position); // Image at position
-		public void tileOnTop(CoverFluGL view, int position); // Notify what tile is on top after scroll or start
+
+		public Bitmap getImage(CoverFluGL anotherCoverFlow, int position); // Image
+																			// at
+																			// position
+
+		public void tileOnTop(CoverFluGL view, int position); // Notify what
+																// tile is on
+																// top after
+																// scroll or
+																// start
+
 		public void topTileClicked(CoverFluGL view, int position);
 	}
 
