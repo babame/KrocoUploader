@@ -39,7 +39,7 @@ public class JsonParser {
 	// function get json from url
 	// by making HTTP POST or GET mehtod
 	public JSONObject makeHttpRequest(String url, String method,
-			JSONObject params) {
+			JSONObject params) throws IOException {
 		// initialize entity
 		StringEntity se = null;
 		// set entity
@@ -83,8 +83,6 @@ public class JsonParser {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
